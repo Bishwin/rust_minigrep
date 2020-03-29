@@ -23,6 +23,7 @@ impl Config {
         };
 
         let case_sensitive = env::var("CASE_INSENSITIVE").is_err();
+        println!("case_sensitive: {}", case_sensitive);
         
         Ok(Config { query,  filename, case_sensitive})
     }
@@ -45,28 +46,15 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
 }
 
 pub fn search_case_insenitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
-    let query = query.to_lowercase();
-    let mut results = Vec::new();
-    
-    for line in contents.lines() {
-        if line.to_lowercase().contains(&query) {
-            results.push(line);
-        }
-    }
-
-    results
+    contents.lines()
+    .filter(|line| line.to_lowercase().contains(&query.to_lowercase()))
+    .collect()
 }
 
 pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
-    let mut results = Vec::new();
-
-    for line in contents.lines() {
-        if line.contains(query) {
-            results.push(line)
-        }
-    }
-
-    results
+    contents.lines()
+        .filter(|line| line.contains(query))
+        .collect()
 }
 
 #[cfg(test)]
